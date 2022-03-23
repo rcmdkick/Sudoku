@@ -11,7 +11,8 @@ namespace Sudoku
         static void Main(string[] args)
         {
             Console.Title = "Sudoku";
-            SudokuMegoldo asd = new SudokuMegoldo("SudokuTabla.txt");
+            //SudokuMegoldo asd = new SudokuMegoldo("SudokuTabla.txt");
+            SudokuMegoldo asd = new SudokuMegoldo("3_3.txt");
             asd.Probalkozas += AllapotFigyelo;
 
             Console.WriteLine("Alap állapot:");

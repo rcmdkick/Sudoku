@@ -30,9 +30,9 @@ namespace Sudoku
             int i = 0;
             while (!van&&i<M[szint])
             {
-                if (ft(szint, E[szint]))
+                if (ft(szint, R[szint, i]))
                 {
-                    if ((szint==0)|| fk(szint, E[szint], szint - 1, E[szint - 1])) 
+                    if (fk(szint, R[szint, i], szint, E[szint])) 
                     {
                         E[szint] = R[szint,i];
                         Probalkozas?.Invoke(szint, E);
@@ -46,6 +46,7 @@ namespace Sudoku
                         }
                     }
                 }
+                i++;
             }
             
 
@@ -74,7 +75,7 @@ namespace Sudoku
         {
             bool x = false;
             if ( (a.Oszlop==b.Oszlop||a.Sor==b.Sor)
-                && (a.Oszlop/3==b.Oszlop/3 && a.Sor/3==b.Sor/3) )
+                || (a.Oszlop/3==b.Oszlop/3 && a.Sor/3==b.Sor/3) )
                 /*ha azonos a két pozíció sora vagy oszlopa, 
                   illetve ha azonos 3x3 -as területen vannak.*/
             {
@@ -85,7 +86,7 @@ namespace Sudoku
     }
     class SudokuMegoldo : Backtrack
     {
-        Pozicio[,] tabla = new Pozicio[9, 9];
+        Pozicio[,] tabla;
         Pozicio[] fixMezok;
         Pozicio[] uresMezok;
         void TablaBetoltes(string file)
@@ -93,6 +94,7 @@ namespace Sudoku
             int uresek = 0;
             int fixek = 0;
             string[] f = File.ReadAllLines(file);
+            tabla = new Pozicio[f.Length, f.Length];
             for (int i = 0; i < f.Length; i++) // sor
             {
                 for (int j = 0; j < f[i].Length; j++) // oszlop
@@ -145,6 +147,7 @@ namespace Sudoku
                     R[i, j] = j + 1; // 1-9-ig számok
                 }
             }
+
         }
 
         public SudokuMegoldo(string file): base()
@@ -192,17 +195,25 @@ namespace Sudoku
         }
         protected override bool ft(int szint, object a)
         {
+            //int i = 0;
+            //bool kizarva = false;
+            //while (i<fixMezok.Length && !kizarva)
+            //{
+            //    if (Pozicio.Kizaroak(a,fixMezok[i]))
+            //    {
+            //        kizarva = true;
+            //    }
+            //    i++;
+            //}
+            //return !kizarva;
+            
             int i = 0;
-            bool kizarva = false;
-            while (i<fixMezok.Length && !kizarva)
+            while (i<fixMezok.Length&&Pozicio.Kizaroak(uresMezok[szint], fixMezok[i])&&!fixMezok[i].Ertek.Equals(a))
             {
-                if (Pozicio.Kizaroak((Pozicio)a,fixMezok[i]))
-                {
-                    kizarva = true;
-                }
                 i++;
             }
-            return !kizarva;
+            return (i < fixMezok.Length);
+
         }
         // fixxmezőkön végig nézi h az aktuális megoldás egyáltalában bele illhet-e a dologba...
         protected override bool fk(int szintA, object A, int szintB, object B)
